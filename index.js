@@ -3,7 +3,9 @@ const logger = require('morgan');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
-const users = require('./routes/user')
+const users = require('./routes/user');
+const ad = require('./routes/role');
+const UserModel = require('./models/User')
 
 mongoose.connect('mongodb://localhost/demoNode', {
     useNewUrlParser: true,
@@ -16,7 +18,9 @@ const app = express();
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
+
 app.use('/users', users);
+app.use('/ad', ad);
 
 
 app.get('/', (rep, res, next) => {
@@ -25,20 +29,39 @@ app.get('/', (rep, res, next) => {
     });
 });
 
-app.use((rep, res, next) => {
-    const err = new Error("Not Found");
-    err.status = 404;
-    next(err);
-})
+app.get("/getUserAgeAndAdress", async (req, res) => {
 
-app.use(() => {
-    const error = app.get('env') === 'development' ? err : {};
-    const status = err.status || 500;
-    return res.status(status).json({
-        error: {
-            message: error.message
+    const users = await UserModel
+        .find(
+            {
+                age: {
+                    $gt: 20,
+                },
+
+            },
+            {
+                address: {
+                    $in: ['Ha Dong'],
+                },
+            },
+        )
+        .select('name age address')
+
+    res.status(200).json({
+        data: {
+            results: users.length,
+            users,
         }
     });
+
+});
+
+app.get("/getAllUser", async (req, res) => {
+    const users = await UserModel.find({});
+    res.status(200).json({
+        users,
+    });
+    
 });
 
 const port = app.get('port') || 3000;

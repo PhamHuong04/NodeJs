@@ -1,14 +1,53 @@
 const mongoose = require('mongoose');
+
 const Schema = mongoose.Schema;
-const User = new Schema({
-    name: { type: String },
-    age: { type: number },
-    email: { type: String },
-    password: { type: String },
-    address: { type: Object},
-}, {
+
+const UserSchema = new Schema(
+  {
+    name: {
+      type: String,
+      require: [true, 'User must name !'],
+    },
+    age: {
+      type: Number
+    },
+    email: {
+      type: String,
+      require: [true, 'User must email !'],
+      unique: true,
+      validate: [
+        function (email) {
+          const re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+          return re.test(email);
+        },
+        'Please fill a valid email address',
+      ],
+    },
+    password: {
+      type: String,
+      minLength: 8,
+    },
+    address: [
+      {
+        type: String,
+      },
+    ],
+    role: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Role"
+      }
+    ],
+    permission: {
+      type: Schema.Types.ObjectId,
+      ref: "permission"
+    }
+  },
+  {
     timestamps: true,
-});
+  },
+);
 
+const UserModel = mongoose.model('User', UserSchema);
 
-module.exports = mongoose.model('User', User);
+module.exports = UserModel;

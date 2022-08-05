@@ -1,55 +1,66 @@
-const User = require('../models/User');
-const { use } = require('../routes/user');
+const User = require("../models/User");
 
-const index = (req, res, next) => {
-    User.find({}, (err, users) => {
-        if (err) next(err);
-        return res.status(200).json({ users });
-    })
+const findUser = async (option) => {
+  try {
+    const user = await User.findOne(option);
+    return user;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
-const getUser = async (req, res, next ) => {
-    console.log('req.params ', req.params);
-    const {userID} = req.params;
-    const user = await User.findById(userID);
-    console.log ('user info ', user);
-    return res.status(200).json(user);
-}
-
-const newUser = async (req, res, next) => {
-    const newUser = await User.create(req.body);
-    if (!newUser) {
-        console.log('Error')
-    }
-    res.status(200).json({
-        data: {
-            user: newUser
-        }
-    })
-}
-
 const updateUser = async (req, res, next) => {
-    const { userID } = req.params;
-    const newUser = req.body;
-    const result = await User.findByIdAndUpdate(userID, newUser, { new: true })
-    return res.status(200).json({ user: result })
-}
+  const { userID } = req.params;
+  const newUser = req.body;
+  const result = await User.findByIdAndUpdate(userID, newUser, { new: true });
+  return res.status(200).json({ user: result });
+};
 
 const deleteUser = async (req, res, next) => {
-    const { userID } = req.params;
-    const result = await User.findByIdAndRemove(userID);
-    return res.status(200).json({ success: true })
-}
+  const { userID } = req.params;
+  const result = await User.findByIdAndRemove(userID);
+  return res.status(200).json({ success: true });
+};
 
-const login = async (req, res, next) => {
-    
-}
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User({ email });
+
+    if (user.password !== password) {
+      res.status(401).json({
+        message: "Password is not correct !",
+      });
+    }
+    return res.status(200).json({
+      data: { user },
+    });
+  } catch (error) {}
+};
+
+const register = async (req, res) => {
+  try {
+    const user = await findUser({ email: req.body.email });
+    if (user) {
+      res.status(400).json({
+        message: "User is existed !",
+      });
+    }
+    const newUser = await UserModel.create(req.body);
+
+    return res.status(201).json({
+      data: {
+        user: newUser,
+      },
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 module.exports = {
-    index,
-    newUser,
-    getUser,
-    updateUser,
-    deleteUser,
-    login
-}
+  updateUser,
+  deleteUser,
+  login,
+  register,
+};

@@ -41,10 +41,15 @@ const deleteUser = async (req, res, next) => {
     return res.status(200).json({ success: true })
 }
 
+const login = async (req, res, next) => {
+    
+}
+
 module.exports = {
     index,
     newUser,
     getUser,
     updateUser,
-    deleteUser
+    deleteUser,
+    login
 }

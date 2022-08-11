@@ -32,16 +32,12 @@ const UserSchema = new Schema(
         type: String,
       },
     ],
-    role: [
+    roles: [
       {
         type: Schema.Types.ObjectId,
         ref: "Role"
       }
     ],
-    permission: {
-      type: Schema.Types.ObjectId,
-      ref: "permission"
-    }
   },
   {
     timestamps: true,

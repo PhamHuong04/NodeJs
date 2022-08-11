@@ -25,7 +25,7 @@ const deleteUser = async (req, res, next) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User({ email });
+    const user = await findUser({ email });
 
     if (user.password !== password) {
       res.status(401).json({
@@ -35,19 +35,19 @@ const login = async (req, res) => {
     return res.status(200).json({
       data: { user },
     });
-  } catch (error) {}
+  } catch (error) { }
 };
 
 const register = async (req, res) => {
   try {
     const user = await findUser({ email: req.body.email });
+    console.log(user)
     if (user) {
       res.status(400).json({
         message: "User is existed !",
       });
     }
-    const newUser = await UserModel.create(req.body);
-
+    const newUser = await User.create(req.body);
     return res.status(201).json({
       data: {
         user: newUser,
@@ -56,6 +56,10 @@ const register = async (req, res) => {
   } catch (error) {
     console.log(error);
   }
+
+  // res.status(200).json({
+  //   a: "aa"
+  // })
 };
 
 module.exports = {

@@ -21,8 +21,6 @@ app.use(morgan('dev'))
 
 app.use(bodyParser.json())
 
-
-
 app.use('/users', userRouter);
 app.use('/role', roleRouter);
 app.use('/permission', permissionRouter);
@@ -42,7 +40,7 @@ app.get('/user-query', async (req, res) => {
 app.get("/user-age-and-address", async (req, res) => {
     const page = 1;
     const perPage = 5;
-    const skip = (page -1)* perPage;
+    const skip = (page - 1) * perPage;
     const users = await UserModel
         .find(
             {
@@ -52,46 +50,45 @@ app.get("/user-age-and-address", async (req, res) => {
 
             },
             {
-                address: {
-                    $search: ['Ha Dong'],
-                },
+                "address.name": "Ha Dong",
             },
         )
         .select('name age address')
         .limit(perPage)
         .skip(skip);
-    
-        res.json({
-            data: {
-                results: users.length,
-                users,
-            }
-        })
-})
 
-
-app.get('/all-user-and-role-permission', async(req, res)=>{
-    const page = 1;
-    const perPage = 5;
-    const skip = (page - 1) * perPage;
-    const users = UserModel.aggregate([
-        {
-            $lookup:
-            {
-                from: "permission",
-                localField: "role",
-                foreignField: "_id",
-                as: "role-permisson"
-            }
-        }
-    ])
     res.json({
         data: {
+            results: users.length,
             users,
         }
     })
-
 })
+
+
+
+// app.get('/all-user-and-role-permission', async(req, res)=>{
+//     const page = 1;
+//     const perPage = 5;
+//     const skip = (page - 1) * perPage;
+//     const users = UserModel.aggregate([
+//         {
+//             $lookup:
+//             {
+//                 from: "permission",
+//                 localField: "role",
+//                 foreignField: "_id",
+//                 as: "role-permisson"
+//             }
+//         }
+//     ])
+//     res.json({
+//         data: {
+//             users,
+//         }
+//     })
+
+// })
 
 
 const port = app.get('port') || 3000;

@@ -10,23 +10,56 @@ const findUser = async (option) => {
 };
 
 const updateUser = async (req, res, next) => {
-  const { userID } = req.params;
-  const newUser = req.body;
-  const result = await User.findByIdAndUpdate(userID, newUser, { new: true });
-  return res.status(200).json({ user: result });
+  try {
+    const { userID } = req.params;
+    const newUser = req.body;
+    const result = await User.findByIdAndUpdate(userID, newUser, { new: true });
+    if (result) {
+      return res.status(200).json({
+        user: result,
+        message: "update successful"
+      });
+    }
+    else {
+      return res.status(404).json({
+        message: "User is existed !"
+      })
+    }
+  }
+  catch (err) {
+    return res.status(400).json({
+      message: "error"
+    })
+  }
 };
 
 const deleteUser = async (req, res, next) => {
-  const { userID } = req.params;
-  const result = await User.findByIdAndRemove(userID);
-  return res.status(200).json({ success: true });
+  try {
+    const { userID } = req.params;
+    const result = await User.findByIdAndRemove(userID);
+    if (result) {
+      return res.status(200).json({
+        success: true,
+        message: "delete successful"
+      });
+    }
+    else {
+      return res.status(404).json({
+        message: "User is existed !"
+      })
+    }
+  }
+  catch (err) {
+    return res.status(400).json({
+      message: "error"
+    })
+  }
 };
 
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await findUser({ email });
-
     if (user.password !== password) {
       res.status(401).json({
         message: "Password is not correct !",
@@ -35,13 +68,17 @@ const login = async (req, res) => {
     return res.status(200).json({
       data: { user },
     });
-  } catch (error) { }
+  }
+  catch (error) {
+    return res.status(400).json({
+      message: "error"
+    });
+  }
 };
 
 const register = async (req, res) => {
   try {
     const user = await findUser({ email: req.body.email });
-    console.log(user)
     if (user) {
       res.status(400).json({
         message: "User is existed !",
@@ -54,13 +91,12 @@ const register = async (req, res) => {
       },
     });
   } catch (error) {
-    console.log(error);
+    return res.status(400).json({
+      message: "error"
+    });
   }
-
-  // res.status(200).json({
-  //   a: "aa"
-  // })
 };
+
 
 module.exports = {
   updateUser,

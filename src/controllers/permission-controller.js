@@ -1,5 +1,4 @@
 const Permission = require("../models/Permission");
-const { permission } = require("../../src/routes/permission");
 
 const index = (req, res, next) => {
   User.find({}, (err, permissions) => {

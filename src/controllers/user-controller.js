@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const Role = require("../models/Role");
 
 const findUser = async (option) => {
   try {
@@ -59,10 +60,18 @@ const deleteUser = async (req, res, next) => {
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await findUser({ email });
-    if (user.password !== password) {
-      res.status(401).json({
-        message: "Password is not correct !",
+    const user = await User.findOne({ email }).select('+password');
+
+    if (!user) {
+      return res.status(400).json({
+        message: "User is not existed !",
+      });
+    }
+
+    const correct = await user.correctPassword(password, user.password);
+    if (!correct) {
+      return res.status(400).json({
+        message: "Password is incorrect !",
       });
     }
     return res.status(200).json({
@@ -70,6 +79,7 @@ const login = async (req, res) => {
     });
   }
   catch (error) {
+    console.log(error)
     return res.status(400).json({
       message: "error"
     });
@@ -84,23 +94,89 @@ const register = async (req, res) => {
         message: "User is existed !",
       });
     }
-    const newUser = await User.create(req.body);
+    // tim role có name la User
+    const roleUser = await Role.findOne({ name: 'User' })
+    console.log(roleUser._id)
+    const roles = [roleUser._id]
+    // set mặc định mỗi user có 1 role là "User"
+    const newUser = await User.create({ ...req.body, roles });
+
     return res.status(201).json({
       data: {
         user: newUser,
       },
     });
   } catch (error) {
+    console.log(error)
     return res.status(400).json({
       message: "error"
     });
   }
 };
 
+const searchAddressAndAge = async (req, res) => {
+  const page = 1;
+  const perPage = 5;
+  const skip = (page - 1) * perPage;
+  const users = await UserModel
+    .find(
+      {
+        age: {
+          $gt: 20,
+        },
+
+      },
+      {
+        "address.name": "Ha Dong",
+      },
+    )
+    .select('name age address')
+    .limit(perPage)
+    .skip(skip);
+
+  res.json({
+    data: {
+      results: users.length,
+      users,
+    }
+  })
+}
+
+
+const search = async (req, res) => {
+  const page = 1
+  const limit = 5;
+  const skip = (page - 1) * limit;
+  const users = await UserModel.find(req.query).skip(skip).limit(limit);
+
+  res.json({
+    users
+  })
+}
+
+
+const searchRoleAndPermission = async (req, res) => {
+
+}
+
+const findUserById = async (req, res) => {
+  const user = await User.findById(req.params.id).populate({
+    path: 'roles'
+  })
+
+  return res.status(200).json({
+    data: {
+      user
+    }
+  })
+}
 
 module.exports = {
   updateUser,
   deleteUser,
   login,
   register,
+  searchAddressAndAge,
+  search,
+  findUserById
 };

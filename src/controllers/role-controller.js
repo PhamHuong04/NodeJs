@@ -16,13 +16,13 @@ const newRole = async (req, res, next) => {
         message: "error"
       })
     }
-    else {
-      return res.status(200).json({
-        data: {
-          role: newRole,
-        },
-      });
-    }
+
+    return res.status(200).json({
+      data: {
+        role: newRole,
+      },
+    });
+
   }
   catch (err) {
     res.status(400).json({

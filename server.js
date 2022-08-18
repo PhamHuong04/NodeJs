@@ -21,8 +21,6 @@ app.use(morgan('dev'))
 
 app.use(bodyParser.json())
 
-
-
 app.use('/users', userRouter);
 app.use('/role', roleRouter);
 app.use('/permission', permissionRouter);
@@ -38,7 +36,6 @@ app.get('/user-query', async (req, res) => {
     })
 })
 
-// Lấy ra các thuộc tính name, address, age của tất cả users có tuổi lớn hơn 20 và sống tại quận Hà Đông, tính tổng documents, có phân trang.
 app.get("/user-age-and-address", async (req, res) => {
     const page = 1;
     const perPage = 5;
@@ -92,7 +89,6 @@ app.get('/all-user-and-role-permission', async(req, res)=>{
     })
 
 })
-
 
 const port = app.get('port') || 3000;
 app.listen(port, () => {

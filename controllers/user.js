@@ -1,5 +1,4 @@
 const User = require('../models/User');
-const { use } = require('../routes/user');
 
 const index = (req, res, next) => {
     User.find({}, (err, users) => {

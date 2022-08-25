@@ -25,6 +25,7 @@ app.use('/users', userRouter);
 app.use('/role', roleRouter);
 app.use('/permission', permissionRouter);
 
+
 app.get('/user-query', async (req, res) => {
     const page = 1
     const limit = 5;
@@ -89,6 +90,9 @@ app.get('/all-user-and-role-permission', async(req, res)=>{
     })
 
 })
+
+
+
 
 const port = app.get('port') || 3000;
 app.listen(port, () => {

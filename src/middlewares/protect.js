@@ -1,6 +1,6 @@
+const jwt = require('jsonwebtoken');
 
 const UserModel = require('../models/User');
-
 
 const protect = async (req, res, next) => {
     // 1) Getting token and check of it's there
@@ -11,12 +11,21 @@ const protect = async (req, res, next) => {
     ) {
         token = req.headers.authorization.split(' ')[1];
     }
-    const currentUser = await UserModel.findById(token).populate({
+
+    if (!token) {
+        return res.status(401).json({
+            message: "Unauthorization !"
+        })
+    }
+    const decode = jwt.verify(token, "JWT_SECRET")
+
+    const currentUser = await UserModel.findById(decode.id).populate({
         path: 'roles'
     });
+
     if (!currentUser) {
         return res.status(401).json({
-            message: "Unthorazation !"
+            message: "Unauthorization !"
         })
     }
     req.user = currentUser;

@@ -1,4 +1,4 @@
-const permisson = (req, res, next) => {
+const permisson = (role) => (req, res, next) => {
     const currentUser = req.user
     const roles = currentUser.roles;
 

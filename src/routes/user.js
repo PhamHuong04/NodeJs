@@ -10,6 +10,6 @@ router.post('/login', UserController.login);
 router.post('/register', UserController.register);
 router.get('/search-age-address', protect, UserController.searchAddressAndAge);
 router.get('/search', protect, UserController.search);
-router.get('/:id', protect, permisson, UserController.findUserById);
+router.get('/:id', protect, permisson("admin"), UserController.findUserById);
 
 module.exports = router;
